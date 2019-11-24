@@ -1,20 +1,39 @@
 package credis
 
-import "github.com/go-redis/redis"
+import (
+	"fmt"
+	"github.com/Unknwon/goconfig"
+	"github.com/go-redis/redis"
+)
 
-func RedisInit(addr string) (*redis.Client, error) {
-	redisdb := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: "XXXX",
-		DB:       0,
-		PoolSize: 10,
-		MaxRetries: 5,
-		MinIdleConns: 5,
-	})
-	_, err := redisdb.Ping().Result()
+var Cfg, err = goconfig.LoadConfigFile("conf/runconf.ini")
+
+func RedisInit() *redis.Client {
+
 	if err != nil {
-		return nil, err
+		fmt.Println("未找到配置文件")
+		return nil
+	}
+
+	Addr, err := Cfg.GetValue("redis", "Addr")
+	Password, err := Cfg.GetValue("redis", "Password")
+	DB, err := Cfg.Int("redis", "DB")
+	PoolSize, err := Cfg.Int("redis", "PoolSize")
+	MaxRetries, err := Cfg.Int("redis", "MaxRetries")
+	MinIdleConns, err := Cfg.Int("redis", "MinIdleConns")
+
+	redisdb := redis.NewClient(&redis.Options{
+		Addr:         Addr,
+		Password:     Password,
+		DB:           DB,
+		PoolSize:     PoolSize,
+		MaxRetries:   MaxRetries,
+		MinIdleConns: MinIdleConns,
+	})
+	_, err = redisdb.Ping().Result()
+	if err != nil {
+		return nil
 	} else {
-		return redisdb, nil
+		return redisdb
 	}
 }

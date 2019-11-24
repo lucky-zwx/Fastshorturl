@@ -5,12 +5,14 @@ import (
 	"awesomeProject/zwxurl/uid"
 	"fmt"
 	"github.com/buaazp/fasthttprouter"
+	"github.com/go-redis/redis"
 	"github.com/valyala/fasthttp"
 	"io/ioutil"
+	"log"
 	"time"
 )
 
-var Credis, _ = credis.RedisInit("127.0.0.1:6379")
+var Credis *redis.Client = credis.RedisInit()
 var Indexfile, _ = ioutil.ReadFile("templates/index.html")
 
 func Shorturl(ctx *fasthttp.RequestCtx) {
@@ -35,7 +37,8 @@ func Postset(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	ctx.SetBodyString("http://zwxurl.top/"+key)
+	myurl, _ := credis.Cfg.GetValue("domain", "url")
+	ctx.SetBodyString(myurl + key)
 }
 
 func main() {
@@ -43,6 +46,5 @@ func main() {
 	router.GET("/", Index)
 	router.GET("/:shorturl", Shorturl)
 	router.POST("/", Postset)
-	fasthttp.ListenAndServe(":80", router.Handler)
-	//log.Fatal(fasthttp.ListenAndServe(":80", router.Handler))
+	log.Fatal(fasthttp.ListenAndServe(":80", router.Handler))
 }
