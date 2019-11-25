@@ -44,7 +44,7 @@ func Postset(ctx *fasthttp.RequestCtx) {
 	}
 	myurl, _ := credis.Cfg.GetValue("domain", "url")
 	if strings.Index(myurl, "http") == -1 {
-		ctx.SetBodyString("请输入镇正确的地址")
+		ctx.SetBodyString("请输入正确的地址")
 	}
 	ctx.SetBodyString(myurl + key)
 }
