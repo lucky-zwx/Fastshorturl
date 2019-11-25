@@ -9,6 +9,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"io/ioutil"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -33,11 +34,18 @@ func Index(ctx *fasthttp.RequestCtx) {
 func Postset(ctx *fasthttp.RequestCtx) {
 	key := uid.DecimalToAny(int(time.Now().UnixNano()), 76)
 	message := string(ctx.FormValue("url"))
+	if message == "" {
+		ctx.SetBodyString("error")
+		return
+	}
 	_, err := Credis.HSet("h1", key, message).Result()
 	if err != nil {
 		fmt.Println(err)
 	}
 	myurl, _ := credis.Cfg.GetValue("domain", "url")
+	if strings.Index(myurl, "http") == -1 {
+		ctx.SetBodyString("请输入镇正确的地址")
+	}
 	ctx.SetBodyString(myurl + key)
 }
 
@@ -46,5 +54,7 @@ func main() {
 	router.GET("/", Index)
 	router.GET("/:shorturl", Shorturl)
 	router.POST("/", Postset)
-	log.Fatal(fasthttp.ListenAndServe(":80", router.Handler))
+	if Credis != nil {
+		log.Fatal(fasthttp.ListenAndServe(":80", router.Handler))
+	}
 }

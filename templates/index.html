@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <link href="https://cdn.bootcss.com/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="https://s2.ax1x.com/2019/11/22/MTNIZF.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="https://s2.ax1x.com/2019/11/22/MTNIZF.png" type="image/x-icon"/>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
     <title>骁链</title>
 </head>
 <body>
@@ -12,7 +13,8 @@
         <div class="span12">
             <h1 class="text-center" style="margin-top: 0.8em">
                 骁链
-            </h1><hr />
+            </h1>
+            <hr/>
             <p class="text-center" style="margin-top: 3em">
                 致力于免费的极速高并发短链接服务
             </p>
@@ -21,12 +23,35 @@
             </div>
             <div style="text-align:center; margin-top: 1em">
                 <form class="form-search" method="post" action="/">
-                    <input name="url" type="text" placeholder="输入你的链接" class="input-xxlarge search-query text-center">
-                    <button type="submit" class="btn">生成</button>
+                    <input id="url" name="url" type="text" placeholder="输入你的链接(例如http://www.baidu.com)"
+                           class="input-xxlarge search-query text-center">
+                    <button type="button" class="btn">生成</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 </body>
+<script language="JavaScript">
+    var isURL = function (str) {
+        var strRegex = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])/;
+        var re = new RegExp(strRegex);
+        return re.test(str);
+    }
+    $("button").click(function () {
+        if (isURL($("#url").val()) === true){
+            $.ajax({
+                url: "/",
+                async: true,
+                type: "post",
+                data: {url: $("#url").val()},
+                success: function (result) {
+                    alert(result);
+                }
+            });
+        } else {
+            alert("链接不符合要求！")
+        }
+    })
+</script>
 </html>
