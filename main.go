@@ -1,8 +1,8 @@
 package main
 
 import (
-	"awesomeProject/zwxurl/credis"
-	"awesomeProject/zwxurl/uid"
+	"./credis"
+	"./uid"
 	"fmt"
 	"github.com/buaazp/fasthttprouter"
 	"github.com/go-redis/redis"
@@ -11,6 +11,7 @@ import (
 	"log"
 	"strings"
 	"time"
+	"net/url"
 )
 
 var Credis *redis.Client = credis.RedisInit()
@@ -18,7 +19,8 @@ var Indexfile, _ = ioutil.ReadFile("templates/index.html")
 
 func Shorturl(ctx *fasthttp.RequestCtx) {
 	shorturl := ctx.UserValue("shorturl").(string)
-	ret, err := Credis.HGet("h1", shorturl).Result()
+	Dshorturl, _ := url.QueryUnescape(shorturl)
+	ret, err := Credis.HGet("url", Dshorturl).Result()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -38,7 +40,7 @@ func Postset(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString("error")
 		return
 	}
-	_, err := Credis.HSet("h1", key, message).Result()
+	_, err := Credis.HSet("url", key, message).Result()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -55,6 +57,6 @@ func main() {
 	router.GET("/:shorturl", Shorturl)
 	router.POST("/", Postset)
 	if Credis != nil {
-		log.Fatal(fasthttp.ListenAndServe(":80", router.Handler))
+		log.Fatal(fasthttp.ListenAndServe(":88", router.Handler))
 	}
 }
