@@ -21,6 +21,9 @@
             <div class="text-center">
                 <img src="https://s2.ax1x.com/2019/11/21/MIj44U.gif">
             </div>
+            <div class="text-center">
+                <p id="shorturl"></p>
+            </div>
             <div style="text-align:center; margin-top: 1em">
                 <form class="form-search" method="post" action="/">
                     <input id="url" name="url" type="text" placeholder="输入你的链接(例如http://www.baidu.com)"
@@ -46,7 +49,8 @@
                 type: "post",
                 data: {url: $("#url").val()},
                 success: function (result) {
-                    alert(result);
+                    // alert(result);
+                    $("#shorturl").text(result);
                 }
             });
         } else {
