@@ -31,6 +31,59 @@
                     <button type="button" class="btn">生成</button>
                 </form>
             </div>
+            <div>
+                <h3 class="text-center margin" style="margin-top: 2em;">使用方法</h3>
+                <p>使用POST发送请求：<strong>http://zwxurl.top/你的网址</strong> 请记得带上http或者https</p>
+                <h4>golang请求示例：</h4>
+                <pre>
+package main
+
+import (
+    "fmt"
+    "net/http"
+	"net/url"
+	"io/ioutil"
+)
+
+func main() {
+    data := make(url.Values)
+    data["url"] = []string{"https://www.baidu.com"}
+
+    res, err := http.PostForm("http://zwxurl.top/", data)
+    if err != nil {
+        fmt.Println(err.Error())
+        return
+    }
+    defer res.Body.Close()
+    body, err := ioutil.ReadAll(res.Body)
+    fmt.Println(string(body))
+}
+                </pre>
+                <h4>使用PHP请求示例</h4>
+                <pre>
+
+&lt;&#63;php
+function send_post($url, $post_data) {
+  	$postdata = http_build_query($post_data);
+ 	$options = array(
+    'http' => array(
+		'method' => 'POST',
+		'header' => 'Content-type:application/x-www-form-urlencoded',
+		'content' => $postdata,
+		'timeout' => 15 * 60 // 超时时间（单位:s）
+    )
+  );
+  	$context = stream_context_create($options);
+ 	$result = file_get_contents($url, false, $context);
+  	return $result;
+}
+//测试
+$post_data = array(
+  	'url' => 'https://www.baidu.com',
+);
+echo send_post('http://zwxurl.top/', $post_data);
+></pre>
+            </div>
         </div>
     </div>
 </div>
