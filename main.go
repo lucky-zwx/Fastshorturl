@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/buaazp/fasthttprouter"
-	"github.com/go-redis/redis"
 	"github.com/valyala/fasthttp"
 	"github.com/zwx19981207/Fastshorturl/credis"
 	"github.com/zwx19981207/Fastshorturl/uid"
@@ -14,7 +13,7 @@ import (
 	"time"
 )
 
-var Credis *redis.Client = credis.RedisInit()
+var Credis = credis.RedisInit()
 var Indexfile, _ = ioutil.ReadFile("templates/index.html")
 
 func Shorturl(ctx *fasthttp.RequestCtx) {
@@ -24,7 +23,7 @@ func Shorturl(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		fmt.Println(err)
 		ctx.SetBodyString("error")
-	}else {
+	} else {
 		ctx.Redirect(ret, fasthttp.StatusMovedPermanently)
 	}
 }
@@ -37,7 +36,7 @@ func Index(ctx *fasthttp.RequestCtx) {
 func Postset(ctx *fasthttp.RequestCtx) {
 	key := uid.DecimalToAny(int(time.Now().UnixNano()), 76)
 	message := string(ctx.FormValue("url"))
-	if message == "" || strings.Index(message ,"http") == -1 {
+	if message == "" || strings.Index(message, "http") == -1 {
 		ctx.SetBodyString("error，请添加http://或https://")
 		ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 		return
@@ -49,7 +48,7 @@ func Postset(ctx *fasthttp.RequestCtx) {
 	myurl, _ := credis.Cfg.GetValue("domain", "url")
 	if strings.Index(myurl, "http") == -1 {
 		ctx.SetBodyString("请输入正确的地址")
-	}else {
+	} else {
 		ctx.SetBodyString(myurl + key)
 	}
 }
